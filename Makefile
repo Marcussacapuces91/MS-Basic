@@ -1,5 +1,5 @@
 CXX=g++          # The C++ compiler
-CXXFLAGS=-g -Wall -Werror -std=c++1      # C++ complilation flags
+CXXFLAGS=-g -Wall -Werror -std=c++11      # C++ complilation flags
 LDLIBS=
 
 PRGM = MSBasic
@@ -13,7 +13,7 @@ $(PRGM): $(OBJS)
 	$(CXX) $(OBJS) $(LDLIBS) -o $@
 
 %.o: %.cpp
-	$(CXX) $(CXXFLAGS) -o $@
+	$(CXX) $(CXXFLAGS) $< -o $@
 
 clean:
 	rm -rf $(OBJS) $(DEPS) $(PRGM)
