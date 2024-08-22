@@ -5,8 +5,8 @@ LDLIBS=
 SRC=src/
 
 # PRGM = MSBasic
-# SRCS := $(wildcard *.cpp)
-# OBJS := $(SRCS:.cpp=.o)
+SRCS := $(wildcard *.cpp)
+OBJS := $(SRCS:.cpp=.o)
 # DEPS := $(OBJS:.o=.d)
 
 # all: $(PRGM)
@@ -14,7 +14,7 @@ SRC=src/
 # $(PRGM): $(OBJS)
 #	$(CXX) $(OBJS) $(LDLIBS) -o $@
 
-%.o: src/%.cpp
+$(OBJS): src/$(SRCS)
 	$(CXX) $(CXXFLAGS) src/$< -o $@
 
 #.PHONY: clean
