@@ -12,8 +12,8 @@ LDLIBS=
 # $(PRGM): $(OBJS)
 #	$(CXX) $(OBJS) $(LDLIBS) -o $@
 
-#%.o: %.cpp
-#	$(CXX) $(CXXFLAGS) src/$< -o $@
+obj/%.o: src/%.cpp
+	$(CXX) $(CXXFLAGS) src/$< -o $@
 
 .PHONY: check
 check:
