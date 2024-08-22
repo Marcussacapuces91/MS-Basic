@@ -1,4 +1,8 @@
 CXX=g++          # The C++ compiler
-CXXFLAGS=-g      # C++ complilation flags
-NATIVE=on        # compiles code targeted to current hardware
-TUNE=generic     # performance-tuning switch
+CXXFLAGS=-g -Wall -Werror -std=c++1      # C++ complilation flags
+LDLIBS=
+
+PRGM = MSBasic
+SRCS := $(wildcard *.cpp)
+OBJS := $(SRCS:.cpp=.o)
+DEPS := $(OBJS:.o=.d)
