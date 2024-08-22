@@ -5,8 +5,8 @@ LDLIBS=
 OBJD=./obj
 
 PRGM=MSBasic
-# SRCS := $(wildcard *.cpp)
-# OBJS := $(SRCS:.cpp=.o)
+SRCS := $(wildcard *.cpp)
+OBJS := $(SRCS:.cpp=.o)
 # DEPS := $(OBJS:.o=.d)
 
 all: $(PRGM)
