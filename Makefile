@@ -2,10 +2,10 @@ CXX=g++
 CXXFLAGS=-g -Wall -Werror -std=c++11
 LDLIBS=
 
-#PRGM = MSBasic
-#SRCS := $(wildcard *.cpp)
-#OBJS := $(SRCS:.cpp=.o)
-#DEPS := $(OBJS:.o=.d)
+# PRGM = MSBasic
+# SRCS := $(wildcard *.cpp)
+# OBJS := $(SRCS:.cpp=.o)
+# DEPS := $(OBJS:.o=.d)
 
 # all: $(PRGM)
 
@@ -15,7 +15,7 @@ LDLIBS=
 %.o: src/%.cpp
 	$(CXX) $(CXXFLAGS) src/$< -o $@
 
-.PHONY: clean
+#.PHONY: clean
 
-clean:
-	rm -rf $(OBJS) $(DEPS) $(PRGM)
+# clean:
+#	rm -rf $(OBJS) $(DEPS) $(PRGM)
