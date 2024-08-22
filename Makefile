@@ -2,6 +2,8 @@ CXX=g++
 CXXFLAGS=-g -Wall -Werror -std=c++11
 LDLIBS=
 
+SRC=src/
+
 # PRGM = MSBasic
 # SRCS := $(wildcard *.cpp)
 # OBJS := $(SRCS:.cpp=.o)
