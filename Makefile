@@ -14,7 +14,7 @@ all: $(PRGM)
 $(PRGM): main.o
 	echo "for $$(PRGM), need main.o"
 
-main.o: src/main.cpp
+%.o: src/%.cpp
 	$(CXX) $(CXXFLAGS) $(INCLUDE) $< -o $@
 
 .PHONY: clean
