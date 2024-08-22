@@ -1,5 +1,5 @@
-CXX=g++          
-CXXFLAGS=-g -Wall -Werror -std=c++11
+CXX=g++
+CXXFLAGS=-g -Wall -Werror -std=c++11 -I=include
 LDLIBS=
 
 PRGM = MSBasic
