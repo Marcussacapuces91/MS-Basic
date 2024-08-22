@@ -3,7 +3,7 @@ CXXFLAGS=-g -Wall -Werror -std=c++1      # C++ complilation flags
 LDLIBS=
 
 PRGM = MSBasic
-SRCS := $(wildcard *.cpp)
+SRCS := $(wildcard src/*.cpp)
 OBJS := $(SRCS:.cpp=.o)
 DEPS := $(OBJS:.o=.d)
 
