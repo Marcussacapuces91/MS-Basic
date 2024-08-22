@@ -12,9 +12,10 @@ LDLIBS=
 # $(PRGM): $(OBJS)
 #	$(CXX) $(OBJS) $(LDLIBS) -o $@
 
-obj/%.o: src/%.cpp
+%.o: src/%.cpp
 	$(CXX) $(CXXFLAGS) src/$< -o $@
 
 .PHONY: clean
+
 clean:
 	rm -rf $(OBJS) $(DEPS) $(PRGM)
