@@ -8,4 +8,5 @@ PRGM = MSBasic
 # DEPS := $(OBJS:.o=.d)
 
 all: $(PRGM)
+	echo "for ALL, need $$(PRGM)"
 
