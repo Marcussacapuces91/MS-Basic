@@ -5,18 +5,7 @@ LDLIBS=
 OBJD=./obj
 SRCD=./src
 
-PRGM=MSBasic
-SRCS := $(wildcard *.cpp)
-OBJS := $(SRCS:.cpp=.o)
-# DEPS := $(OBJS:.o=.d)
-
-all: $(PRGM)
-	echo "for ALL, need " $(PRGM)
-
-$(PRGM): main.o
-	echo "for " $(PRGM) ", need main.o"
-
-$(OBJD)/%.o: $(SRCD)/%.cpp
+obj/main.o: src/main.cpp
 	$(CXX) $(CXXFLAGS) $(INCLUDE) $< -o $@
 
 .PHONY: clean
