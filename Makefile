@@ -4,7 +4,7 @@ INCLUDE=-I./include
 LDLIBS=
 OBJD=./obj
 
-PRGM := "MSBasic"
+PRGM=MSBasic
 # SRCS := $(wildcard *.cpp)
 # OBJS := $(SRCS:.cpp=.o)
 # DEPS := $(OBJS:.o=.d)
