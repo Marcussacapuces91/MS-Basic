@@ -3,6 +3,7 @@ CXXFLAGS=-g -Wall -Werror -std=c++11
 INCLUDE=-I./include
 LDLIBS=
 OBJD=./obj
+SRCD=./src
 
 PRGM=MSBasic
 SRCS := $(wildcard *.cpp)
@@ -15,7 +16,7 @@ all: $(PRGM)
 $(PRGM): main.o
 	echo "for " $(PRGM) ", need main.o"
 
-$(OBJD)/%.o: $(src/%.cpp
+$(OBJD)/%.o: $(SRCD)/%.cpp
 	$(CXX) $(CXXFLAGS) $(INCLUDE) $< -o $@
 
 .PHONY: clean
