@@ -6,6 +6,7 @@ OBJD=./obj
 SRCD=./src
 
 obj/main.o: src/main.cpp
+	mkdir ./obj
 	$(CXX) $(CXXFLAGS) $(INCLUDE) $< -o $@
 
 .PHONY: clean
