@@ -10,3 +10,6 @@ PRGM = MSBasic
 all: $(PRGM)
 	echo "for ALL, need $$(PRGM)"
 
+$(PRGM): main.o
+	echo "for $$(PRGM), need main.o"
+
