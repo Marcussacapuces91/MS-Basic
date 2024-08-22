@@ -3,7 +3,7 @@ CXXFLAGS=-g -Wall -Werror -std=c++11
 INCLUDE=-I./include
 LDLIBS=
 
-PRGM = MSBasic
+PRGM := "MSBasic"
 # SRCS := $(wildcard *.cpp)
 # OBJS := $(SRCS:.cpp=.o)
 # DEPS := $(OBJS:.o=.d)
