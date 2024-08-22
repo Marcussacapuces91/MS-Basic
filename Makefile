@@ -15,10 +15,6 @@ LDLIBS=
 obj/%.o: src/%.cpp
 	$(CXX) $(CXXFLAGS) src/$< -o $@
 
-.PHONY: check
-check:
-	ls
-
 .PHONY: clean
 clean:
 	rm -rf $(OBJS) $(DEPS) $(PRGM)
