@@ -7,22 +7,27 @@
 int main()
 {
     Interpreter interpreter;
-
     std::cout << interpreter;
-    while (std::cin) std::cin >> interpreter;
-
 
 /*
-    Tokenizer tokenizer;
+    while (std::cin) std::cin >> interpreter;
+*/
+
+	Tokenizer tokenizer;
 
     std::ifstream file;
+    file.open("C:\\Users\\marc\\Documents\\GitHub\\MS-Basic\\eliza.bas", std::ios::in);
+    
+    if (!file) {
+    	std::cerr << "Error opening file!" << std::endl;
+    	exit(-1);
+	}
+
     std::string line;
-    file.open("eliza.bas", std::ios::in);
     while (std::getline(file, line)) {
-        std::cout << tokenizer.tokenize(line) << std::endl;
+        interpreter.interpret(line);
     }
     file.close();
-*/
 
     return 0;
 }
