@@ -32,3 +32,4 @@
 *.app
 MS-Basic.dev
 MS-Basic.layout
+Makefile.win
