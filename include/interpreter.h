@@ -29,21 +29,14 @@ class Context {
 };
 */
 
-/*
-class CommandLine {
+class Command {
 	public:
-		CommandLine(const unsigned aLabel, const std::vector<Token*>& aTokens) : label(aLabel), tokens(aTokens) {}
-
-		void execute(Context& context) const {
-		}
+		Command(const std::vector<Token*>& aTokens) {}
 
 	protected:
 
 	private:
-		const unsigned label;
-		std::vector<Token*> tokens;
 };
-*/
 
 class Interpreter {
 	public:
@@ -57,56 +50,66 @@ class Interpreter {
 			out(aOut),
 			err(aErr) {
 		}
+		
+		error_t load(std::ifstream& aFile) {
+		    std::string line;
+		    while (std::getline(aFile, line)) {
+				// Empty line
+				if (!line.length()) continue;
 
-		error_t interpret(std::string& aCommand) {
-			static const Tokenizer tokenizer;
+				Tokenizer tokenizer;
+				bool error;
+				int pos;
+				const auto tokens = tokenizer.tokenize(line, error, pos);		// need to free later all takens!!
+				if (error) {
+					err << "Syntax Error in:" << std::endl;
+					err << line << std::endl;
+					err << std::string(pos, ' ') << '^' << std::endl;
+					return SYNTAX_ERROR;
+				}
 
-			if (!aCommand.length()) return OK;
+				auto token = tokens.begin();
+				unsigned lineNumber = 0;
+				if (const auto pTC = dynamic_cast<TokenConstant*>(*token))  {
+					if (pTC->getType() == Token::INTEGER) {
+						lineNumber = std::stoul(pTC->getValue());
+						++token;
+					} else {
+						err << "Syntax Error: A line number must be an INTEGER!" << std::endl;
+						err << line << std::endl;
+						return SYNTAX_ERROR;
+					} 
+				} else {
+					err << "Syntax Error: A line number must be an INTEGER!" << std::endl;
+					err << line << std::endl;
+					return SYNTAX_ERROR;
+				}
 
-			bool error;
-			int pos;
-			const auto tokens = tokenizer.tokenize(aCommand, error, pos);		// need to free later all takens!!
-			if (error) {
-				err << "Syntax Error in:" << std::endl;
-				err << aCommand << std::endl;
-				err << std::string(pos, ' ') << '^' << std::endl;
-				return SYNTAX_ERROR;
-			}
-//             out << tokens << std::endl;
-
-			auto token = tokens.begin();
-			if (const auto pTC = dynamic_cast<TokenConstant*>(*token)) {
-				err << "Constant " << *pTC << " " << pTC->getType() << std::endl;
-				++token;
-			}
-			while (token != tokens.end()) {
-
-
-
-				++token;
-			}
-
-
-
-/*
-			if (const auto pTC = dynamic_cast<TokenConstant*>(tokens[0])) {
-				err << "Constant " << *pTC << std::endl;
-
-				return 0;
-			} else if (const auto pTIn = dynamic_cast<TokenInstruction*>(tokens[0])) {
-				err << "Instruction " << *pTIn << std::endl;
-
-				return 0;
-			} else if (const auto pTId = dynamic_cast<TokenIdentifier*>(tokens[0])) {
-				err << "Instruction " << *pTId << std::endl;
-
-				return 0;
-			} else {
-				err << "An interactive command shall start with a Statement or a line number" << std::endl;
-				return 1;
-			}
-*/
+				std::vector< std::vector<Token*> > commands;
+				while (token != tokens.end()) {
+					const std::vector<Token*> command = commandSlicer(token, tokens.end());
+					out << command << ':';
+					commands.push_back(command);
+				}
+				out << std::endl;
+		    }
 		}
+		
+		std::vector<Token*> commandSlicer(std::vector<Token*>::const_iterator& start, const std::vector<Token*>::const_iterator& stop) {
+			std::vector<Token*> res;
+			for (auto token = start; token != stop; ++token) {
+				if (const auto pTSep = dynamic_cast<TokenSeparator*>(*token)) {
+					if(pTSep->getId() == ":") {
+						start = ++token;
+						return res;
+					}
+				}
+				res.push_back(*token);
+			}
+			start = stop;
+			return res;
+		}
+
 
 		std::string toString() const {
 			std::ostringstream s;
@@ -130,12 +133,4 @@ class Interpreter {
 std::ostream& operator<<(std::ostream& out, const Interpreter& aInterpreter) {
 	out << aInterpreter.toString() << std::endl;
 	return out;
-}
-
-std::istream& operator>>(std::istream& in, Interpreter& aInterpreter) {
-	std::string s;
-	std::getline(in, s);
-	const auto err = aInterpreter.interpret(s);
-	if (err) std::cerr << "Error " << err << " in command line!" << std::endl;
-	return in;
 }
