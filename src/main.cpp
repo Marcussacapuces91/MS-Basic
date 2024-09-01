@@ -39,10 +39,15 @@ int main()
     	exit(-1);
 	}
 
+	interpreter.load(file);
+
+/*
     std::string line;
     while (std::getline(file, line)) {
         interpreter.interpret(line);
     }
+*/
+
     file.close();
 
     return 0;
