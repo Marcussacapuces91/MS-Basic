@@ -31,7 +31,7 @@ TokenComment* TokenComment::create(std::string::const_iterator& aStart, const st
 	return nullptr; // No instruction found!
 }
 
-std::string TokenComment::str() const {
+std::string TokenComment::toString() const {
 	return "REM" + text;
 }
 
@@ -49,7 +49,7 @@ TokenInstruction* TokenInstruction::create(std::string::const_iterator& aStart, 
 	return nullptr; // No instruction found!
 }
 
-std::string TokenInstruction::str() const {
+std::string TokenInstruction::toString() const {
 	return tokens[id];
 }
 
@@ -97,7 +97,7 @@ const Token::type_t& TokenIdentifier::getType() const {
 	return type;
 }
 
-std::string TokenIdentifier::str() const {
+std::string TokenIdentifier::toString() const {
 	return name;
 }
 
@@ -115,7 +115,7 @@ TokenOperator* TokenOperator::create(std::string::const_iterator& aStart, const 
 	return nullptr; // No identifier found!
 }
 
-std::string TokenOperator::str() const {
+std::string TokenOperator::toString() const {
 	return id;
 }
 
@@ -174,7 +174,7 @@ const std::string& TokenConstant::getValue() const {
 	return value;
 }
 
-std::string TokenConstant::str() const {
+std::string TokenConstant::toString() const {
 	return (type == STRING ? '"' + value + '"' : value);
 }
 
@@ -196,12 +196,12 @@ const std::string& TokenSeparator::getId() const {
 	return id;
 }
 
-std::string TokenSeparator::str() const {
+std::string TokenSeparator::toString() const {
 	return id;
 }
 
 std::ostream& operator<<(std::ostream& out, const Token& t) {
-	return out << t.str();
+	return out << t.toString();
 }
 
 std::ostream& operator<<(std::ostream& out, const std::vector<Token*> list) {

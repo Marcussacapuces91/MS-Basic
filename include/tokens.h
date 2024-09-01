@@ -28,7 +28,7 @@ class Token {
 		enum type_t { STRING, INTEGER, SINGLE, DOUBLE, HEXADECIMAL, OCTAL, CHANEL };
 
 	protected:
-		virtual std::string str() const = 0;
+		virtual std::string toString() const = 0;
 };
 
 /**
@@ -47,7 +47,7 @@ class TokenComment : public Token {
 		static TokenComment* create(std::string::const_iterator& aStart, const std::string::const_iterator& aStop);
 
 	protected:
-		virtual std::string str() const;
+		virtual std::string toString() const;
 
 	private:
 ///< Comment content.
@@ -71,7 +71,7 @@ class TokenInstruction : public Token {
 		static TokenInstruction* create(std::string::const_iterator& aStart, const std::string::const_iterator& aStop);
 
 	protected:
-		virtual std::string str() const;
+		virtual std::string toString() const;
 
 	private:
 		///< Token id.
@@ -101,7 +101,7 @@ class TokenIdentifier : public Token {
 		const type_t& getType() const;
 
 	protected:
-		virtual std::string str() const;
+		virtual std::string toString() const;
 
 	private:
 		const std::string name;
@@ -124,7 +124,7 @@ class TokenOperator : public Token {
 		static TokenOperator* create(std::string::const_iterator& aStart, const std::string::const_iterator& aStop);
 
 	protected:
-		virtual std::string str() const;
+		virtual std::string toString() const;
 
 	private:
 		const std::string id;
@@ -156,7 +156,7 @@ class TokenConstant : public Token {
 		const std::string& getValue() const;
 
 	protected:
-		virtual std::string str() const;
+		virtual std::string toString() const;
 
 	private:
 		const std::string value;
@@ -181,7 +181,7 @@ class TokenSeparator : public Token {
 		const std::string& getId() const;
 
 	protected:
-		virtual std::string str() const;
+		virtual std::string toString() const;
 
 	private:
 		const std::string id;
