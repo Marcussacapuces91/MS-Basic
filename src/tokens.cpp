@@ -205,7 +205,7 @@ std::ostream& operator<<(std::ostream& out, const Token& t) {
 }
 
 std::ostream& operator<<(std::ostream& out, const std::vector<Token*> list) {
-	for (auto token : list) 
-		out << *token << ' ';
+	for (auto&& token : list)
+		out << (token == *list.begin() ? "" : " ") << *token;
 	return out;
 }
