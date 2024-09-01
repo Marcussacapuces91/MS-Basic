@@ -31,8 +31,8 @@ TokenComment* TokenComment::create(std::string::const_iterator& aStart, const st
 	return nullptr; // No instruction found!
 }
 
-const std::string TokenComment::str() const {
-	return "REM"+text;
+std::string TokenComment::str() const {
+	return "REM" + text;
 }
 
 
@@ -49,7 +49,7 @@ TokenInstruction* TokenInstruction::create(std::string::const_iterator& aStart, 
 	return nullptr; // No instruction found!
 }
 
-const std::string TokenInstruction::str() const {
+std::string TokenInstruction::str() const {
 	return tokens[id];
 }
 
@@ -97,7 +97,7 @@ const Token::type_t& TokenIdentifier::getType() const {
 	return type;
 }
 
-const std::string TokenIdentifier::str() const {
+std::string TokenIdentifier::str() const {
 	return name;
 }
 
@@ -115,12 +115,12 @@ TokenOperator* TokenOperator::create(std::string::const_iterator& aStart, const 
 	return nullptr; // No identifier found!
 }
 
-const std::string TokenOperator::str() const {
+std::string TokenOperator::str() const {
 	return id;
 }
 
 
-TokenConstant::TokenConstant(const std::string& aId, const type_t& aType) : id(aId), type(aType) {}
+TokenConstant::TokenConstant(const std::string& aValue, const type_t& aType) : value(aValue), type(aType) {}
 
 TokenConstant* TokenConstant::create(std::string::const_iterator& aStart, const std::string::const_iterator& aStop) {
 	static const std::regex expString("^\"(.*?[^\\\\])\".*$");
@@ -170,9 +170,12 @@ const Token::type_t& TokenConstant::getType() const {
 	return type;
 }
 
+const std::string& TokenConstant::getValue() const {
+	return value;
+}
 
-const std::string TokenConstant::str() const {
-	return (type == STRING ? '"' + id + '"' : id);
+std::string TokenConstant::str() const {
+	return (type == STRING ? '"' + value + '"' : value);
 }
 
 
@@ -189,7 +192,11 @@ TokenSeparator* TokenSeparator::create(std::string::const_iterator& aStart, cons
 	return nullptr; // No token found!
 }
 
-const std::string TokenSeparator::str() const {
+const std::string& TokenSeparator::getId() const {
+	return id;
+}
+
+std::string TokenSeparator::str() const {
 	return id;
 }
 
@@ -198,8 +205,13 @@ std::ostream& operator<<(std::ostream& out, const Token& t) {
 }
 
 std::ostream& operator<<(std::ostream& out, const std::vector<Token*> list) {
+/*
 	for (auto it = list.begin(); it != list.end(); ++it) {
 		out << **it << " ";
+	}
+*/
+	for (auto&& token : list) {
+		out << token << ' ';
 	}
 	return out;
 }

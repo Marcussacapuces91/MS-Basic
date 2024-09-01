@@ -28,7 +28,7 @@ class Token {
 		enum type_t { STRING, INTEGER, SINGLE, DOUBLE, HEXADECIMAL, OCTAL, CHANEL };
 
 	protected:
-		virtual const std::string str() const = 0;
+		virtual std::string str() const = 0;
 };
 
 /**
@@ -47,7 +47,7 @@ class TokenComment : public Token {
 		static TokenComment* create(std::string::const_iterator& aStart, const std::string::const_iterator& aStop);
 
 	protected:
-		virtual const std::string str() const;
+		virtual std::string str() const;
 
 	private:
 ///< Comment content.
@@ -71,7 +71,7 @@ class TokenInstruction : public Token {
 		static TokenInstruction* create(std::string::const_iterator& aStart, const std::string::const_iterator& aStop);
 
 	protected:
-		virtual const std::string str() const;
+		virtual std::string str() const;
 
 	private:
 		///< Token id.
@@ -101,7 +101,7 @@ class TokenIdentifier : public Token {
 		const type_t& getType() const;
 
 	protected:
-		virtual const std::string str() const;
+		virtual std::string str() const;
 
 	private:
 		const std::string name;
@@ -124,7 +124,7 @@ class TokenOperator : public Token {
 		static TokenOperator* create(std::string::const_iterator& aStart, const std::string::const_iterator& aStop);
 
 	protected:
-		virtual const std::string str() const;
+		virtual std::string str() const;
 
 	private:
 		const std::string id;
@@ -150,11 +150,16 @@ class TokenConstant : public Token {
 		 */
 		const type_t& getType() const;
 
+		/**
+		 * Return the value of constant.
+		 */
+		const std::string& getValue() const;
+
 	protected:
-		virtual const std::string str() const;
+		virtual std::string str() const;
 
 	private:
-		const std::string id;
+		const std::string value;
 		const type_t type;
 };
 
@@ -172,9 +177,11 @@ class TokenSeparator : public Token {
 		 * Factory.
 		 */
 		static TokenSeparator* create(std::string::const_iterator& aStart, const std::string::const_iterator& aStop);
+		
+		const std::string& getId() const;
 
 	protected:
-		virtual const std::string str() const;
+		virtual std::string str() const;
 
 	private:
 		const std::string id;
