@@ -33,10 +33,11 @@ class Command : private std::vector<Token*> {
 	public:
 		Command(const std::vector<Token*>& aTokens) : std::vector<Token*>(aTokens) {}
 
-	friend std::ostream& operator<<(std::ostream&, const Command&);
+		friend std::ostream& operator<<(std::ostream&, const Command&);
 };
 
-std::ostream& operator<<(std::ostream& out, const Command& aCommand) {
+std::ostream& operator<<(std::ostream& out, const Command& aCommand)
+{
 	for (auto&& token : aCommand) {
 		out << (token == *aCommand.begin() ? "" : " ") << *token;
 	}
@@ -44,7 +45,8 @@ std::ostream& operator<<(std::ostream& out, const Command& aCommand) {
 }
 
 
-std::ostream& operator<<(std::ostream& out, const std::vector<Command>& aCommands) {
+std::ostream& operator<<(std::ostream& out, const std::vector<Command>& aCommands)
+{
 	for (auto&& command : aCommands)	{
 		out << (&command == &(*aCommands.begin()) ? "" : " : ") << command;
 	}
@@ -62,10 +64,12 @@ class Interpreter {
 		Interpreter(std::istream& aIn = std::cin, std::ostream& aOut = std::cout, std::ostream& aErr = std::cerr) :
 			in(aIn),
 			out(aOut),
-			err(aErr) {
+			err(aErr)
+		{
 		}
 
-		error_t load(std::ifstream& aFile) {
+		error_t load(std::ifstream& aFile)
+		{
 			std::string line;
 			while (std::getline(aFile, line)) {
 				// Empty line?
@@ -89,12 +93,14 @@ class Interpreter {
 					if (pTC->getType() == Token::INTEGER) {
 						lineNumber = std::stoul(pTC->getValue());
 						++token;
-					} else {
+					}
+					else {
 						err << "Syntax Error: A line number must be an INTEGER!" << std::endl;
 						err << line << std::endl;
 						return SYNTAX_ERROR;
 					}
-				} else {
+				}
+				else {
 					err << "Syntax Error: A line number must be an INTEGER!" << std::endl;
 					err << line << std::endl;
 					return SYNTAX_ERROR;
@@ -108,8 +114,8 @@ class Interpreter {
 				}
 				out << std::setw(5) << lineNumber << " " << commands << std::endl;
 
-				
-	
+
+
 			}
 			return OK;
 		}
@@ -120,7 +126,8 @@ class Interpreter {
 		 * @param stop Iterator after the last token.
 		 * @return A vector of tokens.
 		 **/
-		Command commandSlicer(std::vector<Token*>::const_iterator& start, const std::vector<Token*>::const_iterator& stop) {
+		Command commandSlicer(std::vector<Token*>::const_iterator& start, const std::vector<Token*>::const_iterator& stop)
+		{
 			std::vector<Token*> res;
 			for (auto token = start; token != stop; ++token) {
 				if (const auto pTSep = dynamic_cast<TokenSeparator*>(*token)) {
@@ -136,7 +143,8 @@ class Interpreter {
 		}
 
 
-		std::string toString() const {
+		std::string toString() const
+		{
 			std::ostringstream s;
 			s << "MS-Basic - Copyright (C) 2024 by M. SIBERT" << std::endl;
 			s << "Ready." << std::endl;
@@ -155,7 +163,8 @@ class Interpreter {
 		std::map<unsigned, std::vector<Command> > program;
 };
 
-std::ostream& operator<<(std::ostream& out, const Interpreter& aInterpreter) {
+std::ostream& operator<<(std::ostream& out, const Interpreter& aInterpreter)
+{
 	out << aInterpreter.toString() << std::endl;
 	return out;
 }

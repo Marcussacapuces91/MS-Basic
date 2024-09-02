@@ -1,26 +1,27 @@
 /**
  * Copyright [2024] Marc SIBERT
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
- 
+
 #include "tokens.h"
 
 #include <iostream>
 
 TokenComment::TokenComment(const std::string& aText) : text(aText) {}
 
-TokenComment* TokenComment::create(std::string::const_iterator& aStart, const std::string::const_iterator& aStop) {
+TokenComment* TokenComment::create(std::string::const_iterator& aStart, const std::string::const_iterator& aStop)
+{
 	static const std::regex exp("^REM(.*)", std::regex_constants::icase);
 
 	std::smatch sm;
@@ -31,14 +32,16 @@ TokenComment* TokenComment::create(std::string::const_iterator& aStart, const st
 	return nullptr; // No instruction found!
 }
 
-std::string TokenComment::toString() const {
+std::string TokenComment::toString() const
+{
 	return "REM" + text;
 }
 
 
 TokenInstruction::TokenInstruction(const unsigned aId) : id(aId) {}
 
-TokenInstruction* TokenInstruction::create(std::string::const_iterator& aStart, const std::string::const_iterator& aStop) {
+TokenInstruction* TokenInstruction::create(std::string::const_iterator& aStart, const std::string::const_iterator& aStop)
+{
 	for (unsigned i = 0; i < sizeof(tokens) / sizeof(tokens[0]) ; ++i) {
 		const std::regex exp("^" + tokens[i] + ".*", std::regex_constants::icase);
 		if (std::regex_match(aStart, aStop, exp)) {
@@ -49,7 +52,8 @@ TokenInstruction* TokenInstruction::create(std::string::const_iterator& aStart, 
 	return nullptr; // No instruction found!
 }
 
-std::string TokenInstruction::toString() const {
+std::string TokenInstruction::toString() const
+{
 	return tokens[id];
 }
 
@@ -77,7 +81,8 @@ const std::string TokenInstruction::tokens[] = {
 
 TokenIdentifier::TokenIdentifier(const std::string& aName, const type_t& aType) : name(aName), type(aType) {}
 
-TokenIdentifier* TokenIdentifier::create(std::string::const_iterator& aStart, const std::string::const_iterator& aStop) {
+TokenIdentifier* TokenIdentifier::create(std::string::const_iterator& aStart, const std::string::const_iterator& aStop)
+{
 	static const std::regex exp("^([A-Z]+\\w*[\\$%]?).*", std::regex_constants::icase);
 
 	std::smatch sm;
@@ -89,22 +94,26 @@ TokenIdentifier* TokenIdentifier::create(std::string::const_iterator& aStart, co
 	return nullptr; // No identifier found!
 }
 
-const std::string& TokenIdentifier::getName() const {
+const std::string& TokenIdentifier::getName() const
+{
 	return name;
 }
 
-const Token::type_t& TokenIdentifier::getType() const {
+const Token::type_t& TokenIdentifier::getType() const
+{
 	return type;
 }
 
-std::string TokenIdentifier::toString() const {
+std::string TokenIdentifier::toString() const
+{
 	return name;
 }
 
 
 TokenOperator::TokenOperator(const std::string& aId) : id(aId) {}
 
-TokenOperator* TokenOperator::create(std::string::const_iterator& aStart, const std::string::const_iterator& aStop) {
+TokenOperator* TokenOperator::create(std::string::const_iterator& aStart, const std::string::const_iterator& aStop)
+{
 	static const std::regex exp("^([+\\-*\\/<>=()\\[\\]\\%\\^]+).*", std::regex_constants::icase);
 
 	std::smatch sm;
@@ -115,14 +124,16 @@ TokenOperator* TokenOperator::create(std::string::const_iterator& aStart, const 
 	return nullptr; // No identifier found!
 }
 
-std::string TokenOperator::toString() const {
+std::string TokenOperator::toString() const
+{
 	return id;
 }
 
 
 TokenConstant::TokenConstant(const std::string& aValue, const type_t& aType) : value(aValue), type(aType) {}
 
-TokenConstant* TokenConstant::create(std::string::const_iterator& aStart, const std::string::const_iterator& aStop) {
+TokenConstant* TokenConstant::create(std::string::const_iterator& aStart, const std::string::const_iterator& aStop)
+{
 	static const std::regex expString("^\"(.*?[^\\\\])\".*$");
 	static const std::regex expChanel("^(#\\d+).*$");
 
@@ -146,7 +157,7 @@ TokenConstant* TokenConstant::create(std::string::const_iterator& aStart, const 
 	if (std::regex_match(aStart, aStop, sm, expSingle)) {
 		aStart += sm[1].length();
 		return new TokenConstant(sm[1], SINGLE);
-	} 
+	}
 	if (std::regex_match(aStart, aStop, sm, expDouble)) {
 		aStart += sm[1].length();
 		return new TokenConstant(sm[1], DOUBLE);
@@ -166,22 +177,26 @@ TokenConstant* TokenConstant::create(std::string::const_iterator& aStart, const 
 	return nullptr; // No identifier found!
 }
 
-const Token::type_t& TokenConstant::getType() const {
+const Token::type_t& TokenConstant::getType() const
+{
 	return type;
 }
 
-const std::string& TokenConstant::getValue() const {
+const std::string& TokenConstant::getValue() const
+{
 	return value;
 }
 
-std::string TokenConstant::toString() const {
+std::string TokenConstant::toString() const
+{
 	return (type == STRING ? '"' + value + '"' : value);
 }
 
 
 TokenSeparator::TokenSeparator(const std::string& aId) : id(aId) {}
 
-TokenSeparator* TokenSeparator::create(std::string::const_iterator& aStart, const std::string::const_iterator& aStop) {
+TokenSeparator* TokenSeparator::create(std::string::const_iterator& aStart, const std::string::const_iterator& aStop)
+{
 	static const std::regex exp("^([:;,]).*");
 
 	std::smatch sm;
@@ -192,19 +207,23 @@ TokenSeparator* TokenSeparator::create(std::string::const_iterator& aStart, cons
 	return nullptr; // No token found!
 }
 
-const std::string& TokenSeparator::getId() const {
+const std::string& TokenSeparator::getId() const
+{
 	return id;
 }
 
-std::string TokenSeparator::toString() const {
+std::string TokenSeparator::toString() const
+{
 	return id;
 }
 
-std::ostream& operator<<(std::ostream& out, const Token& t) {
+std::ostream& operator<<(std::ostream& out, const Token& t)
+{
 	return out << t.toString();
 }
 
-std::ostream& operator<<(std::ostream& out, const std::vector<Token*> list) {
+std::ostream& operator<<(std::ostream& out, const std::vector<Token*> list)
+{
 	for (auto&& token : list)
 		out << (token == *list.begin() ? "" : " ") << *token;
 	return out;
