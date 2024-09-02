@@ -22,6 +22,7 @@
 #include <iomanip>
 #include <iostream>
 #include <sstream>
+#include <heapapi.h>
 
 #include "tokenizer.h"
 #include "tokens.h"
@@ -36,6 +37,7 @@ class Command : private std::vector<Token*> {
 		friend std::ostream& operator<<(std::ostream&, const Command&);
 };
 
+/*
 std::ostream& operator<<(std::ostream& out, const Command& aCommand)
 {
 	for (auto&& token : aCommand) {
@@ -43,8 +45,12 @@ std::ostream& operator<<(std::ostream& out, const Command& aCommand)
 	}
 	return out;
 }
-
-
+*/
+std::ostream& operator<<(std::ostream& out, const Command& aCommand)
+{
+	return out << static_cast<std::vector<Token*> >(aCommand);
+}
+	
 std::ostream& operator<<(std::ostream& out, const std::vector<Command>& aCommands)
 {
 	for (auto&& command : aCommands)	{
@@ -68,8 +74,13 @@ class Interpreter {
 		{
 		}
 
+		/**
+		 * Load a file in program memory.
+		 **/
 		error_t load(std::ifstream& aFile)
 		{
+			program.clear();	// empty current program
+			
 			std::string line;
 			while (std::getline(aFile, line)) {
 				// Empty line?
@@ -112,10 +123,16 @@ class Interpreter {
 					auto command = commandSlicer(token, tokens.end());
 					commands.push_back(command);
 				}
-				out << std::setw(5) << lineNumber << " " << commands << std::endl;
-
-
-
+				const auto success = program[lineNumber] = commands;
+//				out << std::setw(5) << lineNumber << " " << commands << std::endl;
+			}
+			return OK;
+		}
+		
+		error_t list(const unsigned start=0, const unsigned stop=65535) const {
+			for (auto&& line : program) {
+				if ((line.first >= start) && (line.first <= stop))
+					out << std::setw(5) << line.first << ' ' << line.second << std::endl;
 			}
 			return OK;
 		}
@@ -143,13 +160,32 @@ class Interpreter {
 		}
 
 
+		/**
+		 * Return a string describing the current interpreter.
+		 **/
 		std::string toString() const
 		{
+			const auto handle = GetProcessHeap();
+			if (!handle) {
+				err << "Error getting process heap handle in" << __FILE__ << ':' << __LINE__ << ", func:" << __PRETTY_FUNCTION__ << std::endl;
+				exit(-1);
+			}
+			
+			HEAP_SUMMARY summary = { sizeof(HEAP_SUMMARY), 0, 0, 0, 0 };
+			
+			if (!HeapSummary(handle, 0, &summary)) {
+				err << "Error getting heap summary in" << __FILE__ << ':' << __LINE__ << ", func:" << __PRETTY_FUNCTION__ << std::endl;
+				exit(-1);
+			}
+			
+			
 			std::ostringstream s;
-			s << "MS-Basic - Copyright (C) 2024 by M. SIBERT" << std::endl;
-			s << "Ready." << std::endl;
+			s << PRODUCT_NAME << ' ' << PRODUCT_VERSION << std::endl
+			  << "(C) Copyright M. SIBERT 2024" << std::endl
+			  << summary.cbReserved << " Bytes free" << std::endl
+			  << "Ok" << std::endl;
 
-			return  s.str();
+			return s.str();
 		}
 
 	protected:
@@ -165,6 +201,5 @@ class Interpreter {
 
 std::ostream& operator<<(std::ostream& out, const Interpreter& aInterpreter)
 {
-	out << aInterpreter.toString() << std::endl;
-	return out;
+	return out << aInterpreter.toString() << std::endl;
 }
