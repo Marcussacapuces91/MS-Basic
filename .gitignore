@@ -33,3 +33,6 @@
 MS-Basic.dev
 MS-Basic.layout
 Makefile.win
+MS-Basic.exe.Manifest
+MS-Basic_private.rc
+MS-Basic_private.res

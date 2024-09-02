@@ -79,6 +79,29 @@ const std::string TokenInstruction::tokens[] = {
 	"WAIT", "WEND", "WHILE", "WIDTH", "WINDOW", "WRITE"
 };
 
+TokenFunction::TokenFunction(const unsigned aId) : id(aId) {}
+
+TokenFunction* TokenFunction::create(std::string::const_iterator& aStart, const std::string::const_iterator& aStop)
+{
+	for (unsigned i = 0; i < sizeof(tokens) / sizeof(tokens[0]) ; ++i) {
+		const std::regex exp("^" + tokens[i] + ".*", std::regex_constants::icase);
+		if (std::regex_match(aStart, aStop, exp)) {
+			aStart += tokens[i].size();
+			return new TokenFunction(i);
+		}
+	}
+	return nullptr; // No instruction found!
+}
+
+std::string TokenFunction::toString() const
+{
+	return tokens[id];
+}
+
+const std::string TokenFunction::tokens[] = {
+};
+
+
 TokenIdentifier::TokenIdentifier(const std::string& aName, const type_t& aType) : name(aName), type(aType) {}
 
 TokenIdentifier* TokenIdentifier::create(std::string::const_iterator& aStart, const std::string::const_iterator& aStop)
@@ -134,14 +157,14 @@ TokenConstant::TokenConstant(const std::string& aValue, const type_t& aType) : v
 
 TokenConstant* TokenConstant::create(std::string::const_iterator& aStart, const std::string::const_iterator& aStop)
 {
-	static const std::regex expString("^\"(.*?[^\\\\])\".*$");
-	static const std::regex expChanel("^(#\\d+).*$");
+	static const std::regex expString("^\"(.*?[^\\\\])\".*");
+	static const std::regex expChanel("^(#\\d+).*");
 
-	static const std::regex expSingle("^(\\d*[.]\\d+(E[+-]?\\d+)?!?|\\d+E[+-]?\\d+!?|\\d+!).*$", std::regex_constants::icase);
-	static const std::regex expDouble("^(\\d*[.]\\d+(D[+-]?\\d+)?#?|\\d+D[+-]?\\d+#?|\\d+#).*$", std::regex_constants::icase);
-	static const std::regex expInt("^(\\d+).*$");
-	static const std::regex expHexa("^&H([\\dA-F]+).*$");
-	static const std::regex expOctal("^&O?([1-8]+).*$");
+	static const std::regex expSingle("^(\\d*[.]\\d+(E[+-]?\\d+)?!?|\\d+E[+-]?\\d+!?|\\d+!).*", std::regex_constants::icase);
+	static const std::regex expDouble("^(\\d*[.]\\d+(D[+-]?\\d+)?#?|\\d+D[+-]?\\d+#?|\\d+#).*", std::regex_constants::icase);
+	static const std::regex expInt("^(\\d+).*");
+	static const std::regex expHexa("^&H([\\dA-F]+).*");
+	static const std::regex expOctal("^&O?([1-8]+).*");
 
 	std::smatch sm;
 
@@ -225,6 +248,7 @@ std::ostream& operator<<(std::ostream& out, const Token& t)
 std::ostream& operator<<(std::ostream& out, const std::vector<Token*> list)
 {
 	for (auto&& token : list)
-		out << (token == *list.begin() ? "" : " ") << *token;
+//		out << (token == *list.begin() ? "" : " ") << *token;
+		out << *token;
 	return out;
 }

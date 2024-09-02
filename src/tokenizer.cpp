@@ -51,6 +51,12 @@ std::vector<Token*> Tokenizer::tokenize(const std::string& aLine, bool& err, int
 			continue;
 		}
 
+		auto pTFu = TokenFunction::create(posit, end);
+		if (pTFu) {
+			list.push_back(pTFu);
+			continue;
+		}
+
 		auto pTId = TokenIdentifier::create(posit, end);
 		if (pTId) {
 			list.push_back(pTId);

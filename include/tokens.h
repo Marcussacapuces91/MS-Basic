@@ -83,6 +83,32 @@ class TokenInstruction : public Token {
 };
 
 /**
+ * TokenFunction
+ */
+class TokenFunction : public Token {
+	public:
+		/**
+		 * Constructor initializing id value.
+		 */
+		TokenFunction(const unsigned aId);
+
+		/**
+		 * Factory building the token from the passed text or returning a nullptr if none recognized.
+		 */
+		static TokenFunction* create(std::string::const_iterator& aStart, const std::string::const_iterator& aStop);
+
+	protected:
+		virtual std::string toString() const;
+
+	private:
+		///< Token id.
+		const unsigned id;
+
+		///< List of all tokens allowed for function.
+		static const std::string tokens[0];
+};
+
+/**
  * TokenIdentifier
  */
 class TokenIdentifier : public Token {
