@@ -37,18 +37,10 @@ int main()
 	if (!file) {
 		std::cerr << "Error opening file!" << std::endl;
 		exit(-1);
+	} else {
+		interpreter.load(file);
+		file.close();
 	}
-
-	interpreter.load(file);
-
-	/*
-	    std::string line;
-	    while (std::getline(file, line)) {
-	        interpreter.interpret(line);
-	    }
-	*/
-
-	file.close();
 
 	return 0;
 }
