@@ -14,6 +14,8 @@
  * limitations under the License.
  **/
 
+#include "../MS-Basic_private.h"
+
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -41,6 +43,8 @@ int main()
 		interpreter.load(file);
 		file.close();
 	}
-
+	
+	interpreter.list();
+	
 	return 0;
 }
