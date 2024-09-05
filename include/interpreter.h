@@ -50,7 +50,7 @@ std::ostream& operator<<(std::ostream& out, const Command& aCommand)
 {
 	return out << static_cast<std::vector<Token*> >(aCommand);
 }
-	
+
 std::ostream& operator<<(std::ostream& out, const std::vector<Command>& aCommands)
 {
 	for (auto&& command : aCommands)	{
@@ -80,7 +80,7 @@ class Interpreter {
 		error_t load(std::ifstream& aFile)
 		{
 			program.clear();	// empty current program
-			
+
 			std::string line;
 			while (std::getline(aFile, line)) {
 				// Empty line?
@@ -99,24 +99,21 @@ class Interpreter {
 				}
 
 				auto token = tokens.begin();
-				unsigned lineNumber = 0;
-				if (const auto pTC = dynamic_cast<TokenConstant*>(*token))  {
-					if (pTC->getType() == Token::INTEGER) {
-						lineNumber = std::stoul(pTC->getValue());
-						++token;
-					}
-					else {
-						err << "Syntax Error: A line number must be an INTEGER!" << std::endl;
-						err << line << std::endl;
-						return SYNTAX_ERROR;
-					}
+
+				const auto pTC = dynamic_cast<TokenConstant*>(*token);
+				if (!pTC)  {
+					err << "Syntax Error: A line number must be an CONSTANT!" << std::endl;
+					err << line << std::endl;
+					return SYNTAX_ERROR;
 				}
-				else {
+				
+				if (pTC->getType() != Token::INTEGER) {
 					err << "Syntax Error: A line number must be an INTEGER!" << std::endl;
 					err << line << std::endl;
 					return SYNTAX_ERROR;
 				}
-				assert(lineNumber);	// not 0
+				const unsigned lineNumber = std::stoul(pTC->getValue());
+				++token;
 
 				std::vector<Command> commands;
 				while (token != tokens.end()) {
@@ -124,15 +121,23 @@ class Interpreter {
 					commands.push_back(command);
 				}
 				const auto success = program[lineNumber] = commands;
-//				out << std::setw(5) << lineNumber << " " << commands << std::endl;
 			}
 			return OK;
 		}
-		
-		error_t list(const unsigned start=0, const unsigned stop=65535) const {
+
+		error_t list(const unsigned start=0, const unsigned stop=65535) const
+		{
 			for (auto&& line : program) {
 				if ((line.first >= start) && (line.first <= stop))
 					out << std::setw(5) << line.first << ' ' << line.second << std::endl;
+			}
+			return OK;
+		}
+
+		error_t run(const unsigned start=0) const
+		{
+			for (auto&& line : program) {
+				out << line.first << ' ' << line.second << std::endl;
 			}
 			return OK;
 		}
@@ -170,15 +175,15 @@ class Interpreter {
 				err << "Error getting process heap handle in" << __FILE__ << ':' << __LINE__ << ", func:" << __PRETTY_FUNCTION__ << std::endl;
 				exit(-1);
 			}
-			
+
 			HEAP_SUMMARY summary = { sizeof(HEAP_SUMMARY), 0, 0, 0, 0 };
-			
+
 			if (!HeapSummary(handle, 0, &summary)) {
 				err << "Error getting heap summary in" << __FILE__ << ':' << __LINE__ << ", func:" << __PRETTY_FUNCTION__ << std::endl;
 				exit(-1);
 			}
-			
-			
+
+
 			std::ostringstream s;
 			s << PRODUCT_NAME << ' ' << PRODUCT_VERSION << std::endl
 			  << "(C) Copyright M. SIBERT 2024" << std::endl
