@@ -16,69 +16,43 @@
 
 #pragma once
 
-#include <cassert>
+/*
 #include <vector>
 #include <set>
-#include <iomanip>
 #include <iostream>
 #include <sstream>
-#include <heapapi.h>
+
+#include "tokens.h"
+*/
 
 #include "tokenizer.h"
-#include "tokens.h"
+#include "command.h"
 
-/**
- * A command is only on command, without ':' separator. It's possible to have many command in a line.
- **/
-class Command : private std::vector<Token*> {
-	public:
-		Command(const std::vector<Token*>& aTokens) : std::vector<Token*>(aTokens) {}
-
-		friend std::ostream& operator<<(std::ostream&, const Command&);
-};
-
-/*
-std::ostream& operator<<(std::ostream& out, const Command& aCommand)
-{
-	for (auto&& token : aCommand) {
-		out << (token == *aCommand.begin() ? "" : " ") << *token;
-	}
-	return out;
-}
-*/
-std::ostream& operator<<(std::ostream& out, const Command& aCommand)
-{
-	return out << static_cast<std::vector<Token*> >(aCommand);
-}
-
-std::ostream& operator<<(std::ostream& out, const std::vector<Command>& aCommands)
-{
-	for (auto&& command : aCommands)	{
-		out << (&command == &(*aCommands.begin()) ? "" : " : ") << command;
-	}
-	return out;
-}
-
+#include <cassert>
+#include <iomanip>
+#include <heapapi.h>
 
 class Interpreter {
 	public:
 		enum error_t {
 			OK,
-			SYNTAX_ERROR
+			SYNTAX_ERROR,
+            LINE_NOT_FOUND
 		};
 
+        /**
+         * Initiate the interpreter with the usual 3 streams (cin, cout & cerr).
+         **/
 		Interpreter(std::istream& aIn = std::cin, std::ostream& aOut = std::cout, std::ostream& aErr = std::cerr) :
 			in(aIn),
 			out(aOut),
-			err(aErr)
-		{
+			err(aErr) {
 		}
 
 		/**
 		 * Load a file in program memory.
 		 **/
-		error_t load(std::ifstream& aFile)
-		{
+		error_t load(std::ifstream& aFile) {
 			program.clear();	// empty current program
 
 			std::string line;
@@ -98,26 +72,26 @@ class Interpreter {
 					return SYNTAX_ERROR;
 				}
 
-				auto token = tokens.begin();
+				auto itToken = tokens.cbegin();
 
-				const auto pTC = dynamic_cast<TokenConstant*>(*token);
+				const auto pTC = dynamic_cast<TokenConstant*>(*itToken);
 				if (!pTC)  {
 					err << "Syntax Error: A line number must be an CONSTANT!" << std::endl;
 					err << line << std::endl;
 					return SYNTAX_ERROR;
 				}
-				
+
 				if (pTC->getType() != Token::INTEGER) {
 					err << "Syntax Error: A line number must be an INTEGER!" << std::endl;
 					err << line << std::endl;
 					return SYNTAX_ERROR;
 				}
 				const unsigned lineNumber = std::stoul(pTC->getValue());
-				++token;
+				++itToken;
 
 				std::vector<Command> commands;
-				while (token != tokens.end()) {
-					auto command = commandSlicer(token, tokens.end());
+				while (itToken != tokens.cend()) {
+					auto command = commandSlicer(itToken, tokens.cend());
 					commands.push_back(command);
 				}
 				const auto success = program[lineNumber] = commands;
@@ -125,8 +99,7 @@ class Interpreter {
 			return OK;
 		}
 
-		error_t list(const unsigned start=0, const unsigned stop=65535) const
-		{
+		error_t list(const unsigned start=0, const unsigned stop=65535) const {
 			for (auto&& line : program) {
 				if ((line.first >= start) && (line.first <= stop))
 					out << std::setw(5) << line.first << ' ' << line.second << std::endl;
@@ -134,10 +107,24 @@ class Interpreter {
 			return OK;
 		}
 
-		error_t run(const unsigned start=0) const
-		{
-			for (auto&& line : program) {
-				out << line.first << ' ' << line.second << std::endl;
+		/**
+         * Run the current inmemory program.
+         * @param start Line to start from, dafault starts at the first line.
+         * @return the execussion code.
+         */
+        error_t run(const unsigned start=0) {
+			auto itLine = start ? program.find(start) : program.cbegin();
+            if (itLine == program.cend()) return LINE_NOT_FOUND;
+
+			while (itLine != program.cend()) {
+				for (auto&& command: itLine->second) {
+					out << (&command == &(*itLine->second.cbegin()) ? "" : " : ") << command;
+				}
+				for (auto&& command: itLine->second) {
+					const auto err = command.execute();
+				}
+				out << std::endl;
+				++itLine;
 			}
 			return OK;
 		}
@@ -148,17 +135,16 @@ class Interpreter {
 		 * @param stop Iterator after the last token.
 		 * @return A vector of tokens.
 		 **/
-		Command commandSlicer(std::vector<Token*>::const_iterator& start, const std::vector<Token*>::const_iterator& stop)
-		{
+		Command commandSlicer(std::vector<Token*>::const_iterator& start, const std::vector<Token*>::const_iterator& stop) {
 			std::vector<Token*> res;
-			for (auto token = start; token != stop; ++token) {
-				if (const auto pTSep = dynamic_cast<TokenSeparator*>(*token)) {
+			for (auto itToken = start; itToken != stop; ++itToken) {
+				if (const auto pTSep = dynamic_cast<TokenSeparator*>(*itToken)) {
 					if(pTSep->getId() == ":") {
-						start = ++token;
+						start = ++itToken;
 						return res;
 					}
 				}
-				res.push_back(*token);
+				res.push_back(*itToken);
 			}
 			start = stop;
 			return Command(res);
@@ -168,8 +154,7 @@ class Interpreter {
 		/**
 		 * Return a string describing the current interpreter.
 		 **/
-		std::string toString() const
-		{
+		std::string toString() const {
 			const auto handle = GetProcessHeap();
 			if (!handle) {
 				err << "Error getting process heap handle in" << __FILE__ << ':' << __LINE__ << ", func:" << __PRETTY_FUNCTION__ << std::endl;
@@ -204,7 +189,6 @@ class Interpreter {
 		std::map<unsigned, std::vector<Command> > program;
 };
 
-std::ostream& operator<<(std::ostream& out, const Interpreter& aInterpreter)
-{
+std::ostream& operator<<(std::ostream& out, const Interpreter& aInterpreter) {
 	return out << aInterpreter.toString() << std::endl;
 }
