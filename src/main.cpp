@@ -44,7 +44,7 @@ int main()
 		file.close();
 	}
 	
-	interpreter.list();
+	interpreter.run();
 	
 	return 0;
 }
