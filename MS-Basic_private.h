@@ -5,19 +5,19 @@
 #define MS-BASIC_PRIVATE_H
 
 /* VERSION DEFINITIONS */
-#define VER_STRING	"0.1.0.33"
+#define VER_STRING	"0.1.0.34"
 #define VER_MAJOR	0
 #define VER_MINOR	1
 #define VER_RELEASE	0
-#define VER_BUILD	33
+#define VER_BUILD	34
 #define COMPANY_NAME	"Marc SIBERT"
-#define FILE_VERSION	"0.1.0.33"
+#define FILE_VERSION	"0.1.0.34"
 #define FILE_DESCRIPTION	"Developed using the Dev-C++ IDE"
 #define INTERNAL_NAME	""
 #define LEGAL_COPYRIGHT	"Copyright 2024"
 #define LEGAL_TRADEMARKS	""
 #define ORIGINAL_FILENAME	""
 #define PRODUCT_NAME	"MS-Basic"
-#define PRODUCT_VERSION	"0.1.0.33"
+#define PRODUCT_VERSION	"0.1.0.34"
 
 #endif /*MS-BASIC_PRIVATE_H*/
