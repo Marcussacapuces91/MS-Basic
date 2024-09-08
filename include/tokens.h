@@ -19,6 +19,7 @@
 #include <ostream>
 #include <string>
 #include <regex>
+#include <list>
 
 class Token {
 	public:
@@ -30,6 +31,10 @@ class Token {
 		virtual std::string toString() const = 0;
 
 		friend std::ostream& operator<<(std::ostream&, const Token&);
+};
+
+class TokenList : private std::list<Token*> {
+	
 };
 
 /**
@@ -70,6 +75,12 @@ class TokenInstruction : public Token {
 		 * Factory building the token from the passed text or returning a nullptr if none recognized.
 		 */
 		static TokenInstruction* create(std::string::const_iterator& aStart, const std::string::const_iterator& aStop);
+		
+		unsigned getId() const {
+			return id;
+		}
+
+		const std::string& getString() const;
 
 	protected:
 		virtual std::string toString() const;
