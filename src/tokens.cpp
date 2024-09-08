@@ -52,9 +52,14 @@ TokenInstruction* TokenInstruction::create(std::string::const_iterator& aStart, 
 	return nullptr; // No instruction found!
 }
 
-std::string TokenInstruction::toString() const
+const std::string& TokenInstruction::getString() const
 {
 	return tokens[id];
+}
+
+std::string TokenInstruction::toString() const
+{
+	return getString();
 }
 
 const std::string TokenInstruction::tokens[] = {
